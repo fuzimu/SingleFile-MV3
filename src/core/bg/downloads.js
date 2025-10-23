@@ -254,8 +254,8 @@ async function downloadContent(message, tab) {
 					filenameConflictAction: message.filenameConflictAction,
 					prompt
 				});
-			} else {
-				response = await downloadPage(message, {
+            } else {
+                response = await downloadPage(message, {
 					confirmFilename: message.confirmFilename,
 					incognito: tab.incognito,
 					filenameConflictAction: message.filenameConflictAction,
@@ -273,6 +273,14 @@ async function downloadContent(message, tab) {
 				if (!response) {
 					throw new Error("upload_cancelled");
 				}
+                // 通知内容脚本下载完成（包含最终文件URL）
+                if (response && response.url) {
+                    try {
+                        await browser.tabs.sendMessage(tabId, { method: "toolbar.downloaded", fileUrl: response.url });
+                    } catch (e) {
+                        // ignored
+                    }
+                }
 			}
 			if (message.bookmarkId && message.replaceBookmarkURL && response && response.url) {
 				await bookmarks.update(message.bookmarkId, { url: response.url });
@@ -395,8 +403,8 @@ async function downloadCompressedContent(message, tab) {
 					filenameConflictAction: message.filenameConflictAction,
 					prompt
 				});
-			} else {
-				if (message.backgroundSave) {
+            } else {
+                if (message.backgroundSave) {
 					message.url = blobURI;
 					response = await downloadPage(message, {
 						confirmFilename: message.confirmFilename,
@@ -413,6 +421,13 @@ async function downloadCompressedContent(message, tab) {
 						infobarPositionLeft: message.infobarPositionLeft,
 						infobarPositionRight: message.infobarPositionRight
 					});
+                    if (response && response.url) {
+                        try {
+                            await browser.tabs.sendMessage(tabId, { method: "toolbar.downloaded", fileUrl: response.url });
+                        } catch (e) {
+                            // ignored
+                        }
+                    }
 				} else {
 					const blob = await (await fetch(blobURI)).blob();
 					await downloadPageForeground(message.taskId, message.filename, blob, message.mimeType, tabId);

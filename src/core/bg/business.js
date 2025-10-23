@@ -72,7 +72,8 @@ export {
 	onSaveEnd,
 	onInit,
 	onTabReplaced,
-	cancelTab as cancel
+	cancelTab as cancel,
+	onMessage
 };
 
 async function saveSelectedLinks(tab) {
@@ -428,4 +429,28 @@ function cancel(taskInfo, runNextTasks) {
 
 function mapTaskInfo(taskInfo) {
 	return { id: taskInfo.id, tabId: taskInfo.tab.id, index: taskInfo.tab.index, url: taskInfo.tab.url, title: taskInfo.tab.title, cancelled: taskInfo.cancelled, status: taskInfo.status };
+}
+
+async function onMessage(message, sender) {
+	if (message.method === "business.saveTabs") {
+		try {
+			// 如果tabs数组为空，获取当前标签页
+			let tabs = message.tabs;
+			if (!tabs || tabs.length === 0) {
+				const currentTabs = await browser.tabs.query({ currentWindow: true, active: true });
+				if (currentTabs.length === 0) {
+					throw new Error('No active tab found');
+				}
+				tabs = currentTabs;
+			}
+			
+			// 调用saveTabs函数
+			await saveTabs(tabs, message.options || {});
+			return { success: true };
+		} catch (error) {
+			console.error('Error saving tabs:', error);
+			return { success: false, error: error.message };
+		}
+	}
+	return {};
 }

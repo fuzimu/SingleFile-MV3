@@ -41,9 +41,14 @@
 			"matches": [
 				"<all_urls>"
 			],
-			"run_at": "document_start",
+			"run_at": "document_end",
 			"js": [
-				"lib/single-file-bootstrap.bundle.js"
+				"lib/single-file-toolbar-button.js"
+			],
+			"exclude_matches": [
+				"*://chrome-extension/*",
+				"*://moz-extension/*",
+				"*://extension/*"
 			]
 		}
 	],

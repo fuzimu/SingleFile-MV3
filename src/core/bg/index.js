@@ -38,6 +38,7 @@ import * as tabsData from "./tabs-data.js";
 import * as tabs from "./tabs.js";
 import * as externalMesssages from "./external-messages.js";
 import * as ui from "./../../ui/bg/index.js";
+import * as business from "./business.js";
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	if (message.method.startsWith("tabs.")) {
@@ -72,6 +73,9 @@ browser.runtime.onMessage.addListener((message, sender) => {
 	}
 	if (message.method.startsWith("bootstrap.")) {
 		return bootstrap.onMessage(message, sender);
+	}
+	if (message.method.startsWith("business.")) {
+		return business.onMessage(message, sender);
 	}
 	if (message.method == "ping") {
 		return Promise.resolve({});

@@ -153,6 +153,13 @@ export default [{
 		plugins: [terser()]
 	}]
 }, {
+	input: ["src/ui/content/toolbar-button.js"],
+	output: [{
+		file: "lib/single-file-toolbar-button.js",
+		format: "iife",
+		plugins: [terser()]
+	}]
+}, {
 	input: ["src/core/bg/offscreen-document.js"],
 	output: [{
 		file: "lib/single-file-extension-offscreen-document.js",
